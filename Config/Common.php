@@ -1,15 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Lutz
- * Date: 01.04.2019
- * Time: 18:50
- */
 
 namespace Config;
 
-
-class Common
+/**
+ * @property string filePath
+ *
+ * Class Common
+ * @package Config
+ */
+class Common extends Accessor
 {
+    const DATA = [
+        'filePath' => Config::APP_DIR.'/files'
+    ];
 
 }

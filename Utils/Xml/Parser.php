@@ -1,12 +1,12 @@
 <?php
 
-namespace UtilsXmlParser;
+namespace Utils\Xml;
 
 /**
- * Class XMLParser
- * @package UtilsXmlParser
+ * Class Parser
+ * @package Utils\Xml
  */
-class XMLParser
+class Parser
 {
     /**
      * @var resource
@@ -18,9 +18,15 @@ class XMLParser
      */
     private $_options;
 
-    private $_parser = null;
+    /**
+     * @var resource 
+     */
+    private $_parser;
 
-    private $_parseHandler = null;
+    /**
+     * @var Processor 
+     */
+    private $_parseProcessor = null;
 
     /**
      * @return array of fields
@@ -40,6 +46,10 @@ class XMLParser
         return $this->_fileHandler !== null && get_resource_type($this->_fileHandler) === 'stream';
     }
 
+    /**
+     * @param bool $rewind
+     * @return bool|resource|null
+     */
     private function _openFile($rewind = false)
     {
         if (!$this->_isOpenedFile())
@@ -70,6 +80,12 @@ class XMLParser
         $this->_options = array_merge($this->_options, $options);
     }
 
+    /**
+     * @param $optionName
+     * @param $value
+     * @return bool
+     * @throws \Exception
+     */
     public function setOption($optionName, $value)
     {
         if (array_key_exists($optionName, $this->_options))
@@ -92,9 +108,13 @@ class XMLParser
         $this->_setOptions($options);
     }
 
+    /**
+     * @return array
+     * @throws \Exception
+     */
     public function analyze()
     {
-        $analyser = new XmlAnalyser();
+        $analyser = new Analyser();
 
         $xmlParser = xml_parser_create();
         xml_set_element_handler($xmlParser, [$analyser, "startElement"], [$analyser, "endElement"]);
@@ -154,29 +174,29 @@ class XMLParser
         return $result;
     }
 
+    /**
+     * @param int $rowsCount
+     * @return array
+     * @throws \Exception
+     */
     public function getRows($rowsCount = 25)
     {
-        if ($this->_parseHandler === null || $this->_parser === null)
+        if ($this->_parseProcessor === null || $this->_parser === null)
         {
-            if ($this->_options['feedUrl'] === Yii::$app->params['xml']['feedUrl'])
-            {
-                $this->_parseHandler = new Ceneo($this->_options['pathXml']);
-            } else {
-                $this->_parseHandler = new XmlProcessor($this->_options['pathXml']);
-            }
+            $this->_parseProcessor = new Processor($this->_options['pathXml']);
             $this->_parser = xml_parser_create();
-            xml_set_element_handler($this->_parser, [$this->_parseHandler, "startElement"], [$this->_parseHandler, "endElement"]);
-            xml_set_character_data_handler($this->_parser, [$this->_parseHandler, "characters"]);
+            xml_set_element_handler($this->_parser, [$this->_parseProcessor, "startElement"], [$this->_parseProcessor, "endElement"]);
+            xml_set_character_data_handler($this->_parser, [$this->_parseProcessor, "characters"]);
         }
 
-        $rows = $this->_parseHandler->popRows($rowsCount);
+        $rows = $this->_parseProcessor->popRows($rowsCount);
         $neededCount = $rowsCount - count($rows);
 
         if ($neededCount > 0) {
 
             while ($neededCount > 0) {
                 $res = $this->start($this->_parser);
-                $rows = array_merge($rows,$this->_parseHandler->popRows($neededCount));
+                $rows = array_merge($rows,$this->_parseProcessor->popRows($neededCount));
                 $neededCount = $rowsCount - count($rows);
                 if ($res === false)
                 {
@@ -186,13 +206,18 @@ class XMLParser
         }
 
         return [
-            'header' => $this->_parseHandler->getHeader(),
+            'header' => $this->_parseProcessor->getHeader(),
             'rows' => $rows,
             'options' => $this->_options,
             'pathXml' => $this->_options['pathXml']
         ];
     }
 
+    /**
+     * @param $xmlParser
+     * @return bool
+     * @throws \Exception
+     */
     public function start($xmlParser)
     {
         if (!$this->_openFile())
@@ -202,7 +227,7 @@ class XMLParser
 
         if ($data = fread($this->_fileHandler, 1000)) {
             if (!xml_parse($xmlParser, $data)) {
-                throw new ExceptionETLNoneCritical("XML Error: " . xml_error_string(xml_get_error_code($xmlParser))." at line " . xml_get_current_line_number($xmlParser),1);
+                throw new \Exception("XML Error: " . xml_error_string(xml_get_error_code($xmlParser))." at line " . xml_get_current_line_number($xmlParser),1);
             }
         }
         if (feof($this->_fileHandler))
