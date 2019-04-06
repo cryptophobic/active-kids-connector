@@ -176,7 +176,7 @@ class Parser
 
     /**
      * @param int $rowsCount
-     * @return array
+     * @return array|bool
      * @throws \Exception
      */
     public function getRows($rowsCount = 25)
@@ -203,6 +203,11 @@ class Parser
                     break;
                 }
             }
+        }
+
+        if (count($rows) === 0)
+        {
+            return false;
         }
 
         return [

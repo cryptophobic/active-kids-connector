@@ -12,7 +12,7 @@ $options = getopt($shortopts, $longopts);
 
 $feed = new Feed();
 $feed->setFeedUrl(Config::RoyalToys()->feedUrl);
-$feed->run();
+var_dump($feed->run());
 
 //if (!empty($options['f']))
 //{

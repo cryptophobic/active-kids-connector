@@ -99,12 +99,13 @@ class Processor
     public function characters($parser, $data)
     {
         if ($this->_isInContainer === true) {
-            if (!empty($this->_row[$this->_key]) || trim($data) !== '') {
+            if (trim($data) !== '') {
                 $this->_header[$this->_key] = $this->_key;
-                if (empty($this->_row[$this->_key])) {
-                    $this->_row[$this->_key] = '';
+
+                if(empty($this->_row[$this->_key])) {
+                    $this->_row[$this->_key] = [];
                 }
-                $this->_row[$this->_key] .= trim($data);
+                $this->_row[$this->_key][] = trim($data);
             }
         }
     }
@@ -123,20 +124,24 @@ class Processor
         }
         $this->_stack[] = $name;
 
-        if ($this->_pathXml == $current) {
+        if (strstr($current, $this->_pathXml) !== false) {
             $this->_isInContainer = true;
-            $this->_row = [];
         }
 
         if ($this->_isInContainer === true) {
-
             $this->_key = str_replace($this->_pathXml, '', $current);
-            $this->_key = ltrim($this->_key, '/');
+            $this->_key = trim(ltrim($this->_key, '/'));
+            if (empty($this->_key)) {
+                $this->_key = $name;
+            }
 
             if (count($attrs) > 0) {
                 foreach ($attrs as $attribute => $value) {
                     $this->_header[$this->_key . $attribute] = $this->_key . $attribute;
-                    $this->_row[$this->_key . $attribute] = trim($value);
+                    if(empty($this->_row[$this->_key . $attribute])) {
+                        $this->_row[$this->_key . $attribute] = [];
+                    }
+                    $this->_row[$this->_key . $attribute][] = trim($value);
                 }
             }
         }
@@ -151,8 +156,9 @@ class Processor
         $current = '/' . implode("/", $this->_stack);
         if ($this->_pathXml == $current) {
             $this->_rows[] = $this->_row;
-            $this->_isInContainer = false;
+            $this->_row = [];
         }
+        $this->_isInContainer = false;
         array_pop($this->_stack);
     }
 

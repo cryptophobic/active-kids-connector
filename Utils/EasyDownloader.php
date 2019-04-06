@@ -77,8 +77,8 @@ class EasyDownloader
                 return $this->_streamCopyDownload();
                 break;
             default:
-                return $this->_easyCopy();
-            //return $this->_curlCopyDownload();
+                //return $this->_easyCopy();
+                return $this->_curlCopyDownload();
         }
     }
 
@@ -168,7 +168,7 @@ class EasyDownloader
                 $des = fopen($this->_fileName, 'r');
                 fclose($des);
             } else {
-                throw new \Exception('cannot download file');
+                throw new \Exception('Cannot download file');
             }
         } catch (\Exception $e) {
             $this->_errors[] = $e->getMessage();
