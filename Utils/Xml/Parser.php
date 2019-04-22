@@ -52,12 +52,9 @@ class Parser
      */
     private function _openFile($rewind = false)
     {
-        if (!$this->_isOpenedFile())
-        {
+        if (!$this->_isOpenedFile()) {
             $this->_fileHandler = fopen($this->_options['fileName'], 'rb');
-        }
-        elseif ($rewind === true)
-        {
+        } elseif ($rewind === true) {
             rewind($this->_fileHandler);
         }
         return $this->_fileHandler;
@@ -88,8 +85,7 @@ class Parser
      */
     public function setOption($optionName, $value)
     {
-        if (array_key_exists($optionName, $this->_options))
-        {
+        if (array_key_exists($optionName, $this->_options)) {
             $this->_options[$optionName] = $value;
             return true;
         } else {
@@ -130,8 +126,7 @@ class Parser
                  */
             }
         }
-        catch (\Exception $e)
-        {
+        catch (\Exception $e) {
             if ($e->getMessage() !== 'Result OK') {
                 throw $e;
             }
@@ -181,8 +176,7 @@ class Parser
      */
     public function getRows($rowsCount = 25)
     {
-        if ($this->_parseProcessor === null || $this->_parser === null)
-        {
+        if ($this->_parseProcessor === null || $this->_parser === null) {
             $this->_parseProcessor = new Processor($this->_options['pathXml']);
             $this->_parser = xml_parser_create();
             xml_set_element_handler($this->_parser, [$this->_parseProcessor, "startElement"], [$this->_parseProcessor, "endElement"]);
@@ -205,8 +199,7 @@ class Parser
             }
         }
 
-        if (count($rows) === 0)
-        {
+        if (count($rows) === 0) {
             return false;
         }
 
@@ -225,8 +218,7 @@ class Parser
      */
     public function start($xmlParser)
     {
-        if (!$this->_openFile())
-        {
+        if (!$this->_openFile()) {
             throw new \Exception("Unable to open file ".$this->_options['fileName']);
         }
 
@@ -235,8 +227,7 @@ class Parser
                 throw new \Exception("XML Error: " . xml_error_string(xml_get_error_code($xmlParser))." at line " . xml_get_current_line_number($xmlParser),1);
             }
         }
-        if (feof($this->_fileHandler))
-        {
+        if (feof($this->_fileHandler)) {
             return false;
         } else {
             return true;

@@ -3,24 +3,29 @@
 include __DIR__."/autoload.php";
 
 use Classes\RoyalToys\Feed;
+use Classes\RoyalToys\FileDiff;
 use Config\Config;
 
-$shortopts = "fu";
-$longopts = ['file', 'url'];
+$shortopts = "fd";
+$longopts = ['file', 'diff'];
 
 $options = getopt($shortopts, $longopts);
 
-$feed = new Feed();
-$feed->setFeedUrl(Config::RoyalToys()->feedUrl);
-var_dump($feed->run());
+print_r($options);
 
-//if (!empty($options['f']))
-//{
-//    $feed->setFeedLocalFileName($options['f']);
-//}
-//
-//if (!empty($options['u']))
-//{
-//    $feed->setFeedUrl(Config::RoyalToys()->feedUrl);
-//}
+if (isset($options['f']))
+{
+    $feed = new Feed();
+    $feed->setFeedUrl(Config::RoyalToys()->feedUrl);
+    var_dump($feed->run());
+}
+
+if (isset($options['d']))
+{
+    $diff = new FileDiff(
+        Config::Common()->filePath.DIRECTORY_SEPARATOR.'export17.04.csv',
+        Config::Common()->filePath.DIRECTORY_SEPARATOR.Config::RoyalToys()->outputFileName
+        );
+    $diff->diff(Config::Common()->filePath.DIRECTORY_SEPARATOR.'result.csv');
+}
 

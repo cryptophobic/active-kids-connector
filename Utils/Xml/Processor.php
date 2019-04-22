@@ -45,6 +45,11 @@ class Processor
     protected $_header = [];
 
     /**
+     * @var bool
+     */
+    protected $_endContainer = true;
+
+    /**
      * Processor constructor.
      * @param $pathXml
      */
@@ -105,7 +110,14 @@ class Processor
                 if(empty($this->_row[$this->_key])) {
                     $this->_row[$this->_key] = [];
                 }
-                $this->_row[$this->_key][] = trim($data);
+
+                if ($this->_endContainer === true || empty($this->_row[$this->_key])) {
+                    $this->_row[$this->_key][] = $data;
+                } else {
+                    $lastElement = count($this->_row[$this->_key]) - 1;
+                    $this->_row[$this->_key][$lastElement] .= $data;
+                }
+                $this->_endContainer = false;
             }
         }
     }
@@ -159,6 +171,7 @@ class Processor
             $this->_row = [];
         }
         $this->_isInContainer = false;
+        $this->_endContainer = true;
         array_pop($this->_stack);
     }
 
