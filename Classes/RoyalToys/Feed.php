@@ -16,115 +16,9 @@ class Feed
 
     const CATEGORY_SPECIFICATION = 'Подраздел';
 
-    const CATEGORIES_MAPPING = [
-        'Детские палатки' => 'Детские палатки, корзины для игрушек и шарики',
-        'Корзины для игрушек' => 'Детские палатки, корзины для игрушек и шарики',
-        'Шарики для сухого бассейна' => 'Детские палатки, корзины для игрушек и шарики',
-
-        'Скейты' => 'Детский транспорт',
-        'Прыгуны' => 'Детский транспорт',
-        'Толокары' => 'Детский транспорт',
-        'Детские двухколесные велосипеды' => 'Детский транспорт',
-        'Детские трехколесные велосипеды' => 'Детский транспорт',
-        'Самокаты' => 'Детский транспорт',
-        'Беговелы' => 'Детский транспорт',
-        'Качалки' => 'Детский транспорт',
-
-        'Матрасы' => 'Надувные изделия',
-        'Бассейны' => 'Надувные изделия',
-        'Надувные круги' => 'Надувные изделия',
-        'Спортивные товары' => 'Надувные изделия',
-        'Коврики для йоги' => 'Надувные изделия',
-        'Боксерские наборы' => 'Надувные изделия',
-        'Дартс' => 'Надувные изделия',
-
-        'Зимние товары для улицы' => 'Товары для улицы',
-        'Санки, ледянки и тарелки' => 'Товары для улицы',
-        'Снежколеп' => 'Товары для улицы',
-
-        'Игровые наборы для самих маленьких' => 'Для самых маленьких',
-		'Мозаики' => 'Для самых маленьких',
-		'Музыкальные игрушки' => 'Для самых маленьких',
-		'Ночники, светильники' => 'Для самых маленьких',
-		'Игрушки для ванной' => 'Для самых маленьких',
-		'Машинки для малышей' => 'Для самых маленьких',
-		'Погремушки, мобили' => 'Для самых маленьких',
-		'Сортеры, логики' => 'Для самых маленьких',
-		'Развивающие коврики' => 'Для самых маленьких',
-		'Песочные наборы' => 'Для самых маленьких',
-		'Игрушки повторюшки' => 'Для самых маленьких',
-		'Книги, сказочники' => 'Для самых маленьких',
-		'Игрушки с мыльными пузырями' => 'Для самых маленьких',
-		'Рыбалки и сачки' => 'Для самых маленьких',
-
-        'Домики для кукол' => 'Игрушки для девочек',
-		'Игровые наборы бытовая техника' => 'Игрушки для девочек',
-		'Игровые наборы доктор' => 'Игрушки для девочек',
-		'Игровые наборы кухня' => 'Игрушки для девочек',
-		'Игровые наборы магазин' => 'Игрушки для девочек',
-		'Игровые наборы салон красоты' => 'Игрушки для девочек',
-		'Куклы' => 'Игрушки для девочек',
-		'Маленькие куклы' => 'Игрушки для девочек',
-		'Одежда и аксессуары для кукол' => 'Игрушки для девочек',
-		'Пупсы' => 'Игрушки для девочек',
-		'Интерактивные куклы' => 'Игрушки для девочек',
-		'Куклы типа барби' => 'Игрушки для девочек',
-		'Коляски для кукол' => 'Игрушки для девочек',
-		'Кроватки для кукол' => 'Игрушки для девочек',
-		'Лошадки с каретами' => 'Игрушки для девочек',
-		'Шкатулки' => 'Игрушки для девочек',
-
-        'Волчки Infinity nado и Beyblade' => 'Игрушки для мальчиков',
-		'Автотреки, паркинги' => 'Игрушки для мальчиков',
-		'Детская железная дорога' => 'Игрушки для мальчиков',
-		'Игрушечный транспорт' => 'Игрушки для мальчиков',
-		'Наборы инструментов' => 'Игрушки для мальчиков',
-		'Трансформеры и роботы' => 'Игрушки для мальчиков',
-		'Игровые наборы для мальчиков' => 'Игрушки для мальчиков',
-		'Фигурки героев' => 'Игрушки для мальчиков',
-
-        'Водяное оружие' => 'Детское оружие',
-		'Автоматы на пульках' => 'Детское оружие',
-		'Арбалеты, луки' => 'Детское оружие',
-		'Пистолеты' => 'Детское оружие',
-		'Боеприпасы' => 'Детское оружие',
-		'Оружие с мягкими пулями' => 'Детское оружие',
-
-        'Пластиковые головоломки' => 'Головоломки',
-		'Металлические головоломки' => 'Головоломки',
-		'Деревянные головоломки' => 'Головоломки',
-		'Кубик рубика' => 'Головоломки',
-
-        'Конструкторы с мелкими деталями' => 'Конструкторы',
-		'Конструкторы с крупными деталями' => 'Конструкторы',
-		'Конструктор липучка'  => 'Конструкторы',
-		'Магнитные конструкторы'  => 'Конструкторы',
-		'Металлические конструкторы'  => 'Конструкторы',
-
-        'Радиоуправляемые квадрокоптеры' => 'Радиоуправляемые модели',
-		'Аксессуары' => 'Радиоуправляемые модели',
-		'Радиоуправляемые вертолеты' => 'Радиоуправляемые модели',
-		'Радиоуправляемые животные' => 'Радиоуправляемые модели',
-		'Радиоуправляемые машины' => 'Радиоуправляемые модели',
-		'Радиоуправляемые лодки' => 'Радиоуправляемые модели',
-		'Радиоуправляемые роботы и трансформеры' => 'Радиоуправляемые модели',
-		'Радиоуправляемые танки' => 'Радиоуправляемые модели',
-		'Радиоуправляемый спецтранспорт' => 'Радиоуправляемые модели',
-
-        'Настольные игры-головоломки' => 'Настольные игры',
-		'Настольный бильярд' => 'Настольные игры',
-		'Настольный футбол' => 'Настольные игры',
-		'Настольный хоккей' => 'Настольные игры',
-		'Карточные настольные игры' => 'Настольные игры',
-
-        'Картины по номерам' => 'Наборы для творчества',
-		'Кинетический песок' => 'Наборы для творчества',
-		'Пластилин' => 'Наборы для творчества',
-		'Рисование' => 'Наборы для творчества',
-		'Рукоделие' => 'Наборы для творчества'
-    ];
-
     const EXTRA_SPEC = 'Рекомендованная цена';
+
+    const NOT_SPECIFIED = 'Не указано';
 
     const MANDATORY = ['Brand', 'Category', 'Product name', 'Price', 'Description long', 'Description short', 'Stock', 'Public', 'Original link'];
 
@@ -250,7 +144,9 @@ class Feed
      */
     private function _prepareHeader()
     {
-        $categoriesMapped = $result = $this->_images = $this->_specifications = [];
+        $categoriesMapped = $this->_images = $this->_specifications = [];
+
+        $result = [static::CATEGORY_SPECIFICATION => 1];
         $pictureCount = 0;
         if ($this->_prepareFeed()) {
             $parser = new Parser([
@@ -261,6 +157,7 @@ class Feed
                 foreach ($array['rows'] as $row) {
                     if (!empty($row[static::PARAMNAME])) {
                         foreach ($row[static::PARAMNAME] as $key => $name) {
+                            $name = $this->_mapFeatureName($name);
                             if (trim($name) !== static::EXTRA_SPEC) {
                                 $result[trim($name)] = 1;
                             }
@@ -274,18 +171,34 @@ class Feed
 
             $result = array_keys($result);
             $this->_specifications = array_flip($result);
-            $this->_specifications[static::CATEGORY_SPECIFICATION] = count($result);
-            $categoriesMapped = ['Feature checkbox '.static::CATEGORY_SPECIFICATION];
 
             $result = array_map(function ($item) {
-                return "Feature input ".$item;
+                $type = $this->_getFeatureType($item);
+
+                return "Feature $type $item";
             }, $result);
 
             for ($i = 0; $i < $pictureCount; $i++) {
                 $this->_images[] = 'Image ' . ($i + 1);
             }
         }
-        return array_merge(static::MANDATORY, $result, $categoriesMapped, $this->_images);
+        return array_merge(static::MANDATORY, $result, $categoriesMapped, $this->_images, ['Supplier']);
+    }
+
+    /**
+     * @param $featureName
+     * @return string
+     */
+    private function _getFeatureType($featureName) {
+        return in_array($featureName, Config::RoyalToys()->featureFilters) ? 'selected' : 'input';
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    private function _mapFeatureName($name) {
+        return empty(Config::RoyalToys()->featureMapping[trim($name)]) ? $name : empty(Config::RoyalToys()->featureMapping[trim($name)]);
     }
 
     /**
@@ -295,8 +208,8 @@ class Feed
      */
     private function _getCategoryName($categoriesList, $categoryId) {
         $categoryName = !empty($categoriesList[$categoryId]) ? $categoriesList[$categoryId]['name'] : '';
-        if (!empty(static::CATEGORIES_MAPPING[$categoryName])) {
-            $categoryName = static::CATEGORIES_MAPPING[$categoryName];
+        if (!empty(Config::RoyalToys()->categoriesMapping[$categoryName])) {
+            $categoryName = Config::RoyalToys()->categoriesMapping[$categoryName];
         }
         return $categoryName;
     }
@@ -325,7 +238,12 @@ class Feed
             {
                 foreach ($array['rows'] as $row)
                 {
-                    $csvRow = array_fill(0, count($header) - 1, '');
+                    $csvRow = array_fill(0, count($header), '');
+                    foreach (Config::RoyalToys()->featureFilters as $filterName) {
+                        $rowPosition = $this->_specifications[$filterName] + count(self::MANDATORY);
+                        $csvRow[$rowPosition] = static::NOT_SPECIFIED;
+                    }
+
                     $categoryName = $this->_getCategoryName($categoriesList, $row['CATEGORYID'][0]);
                     if (empty($categoryName)) {
                         continue;
@@ -347,16 +265,17 @@ class Feed
                     $csvRow[static::IS_PUBLIC] = 1;
 
                     $catSpecName = !empty($categoriesList[$row['CATEGORYID'][0]]) ? trim($categoriesList[$row['CATEGORYID'][0]]['name']) : '';
+                    $rowPosition = $this->_specifications[static::CATEGORY_SPECIFICATION] + count(self::MANDATORY);
 
-                    if(!empty(static::CATEGORIES_MAPPING[$catSpecName])) {
-                        $rowPosition = $this->_specifications[static::CATEGORY_SPECIFICATION] + count(self::MANDATORY);
-                        $csvRow[$rowPosition] = "$catSpecName~0.00";
+                    if(!empty(Config::RoyalToys()->categoriesMapping[$catSpecName])) {
+                        $csvRow[$rowPosition] = $catSpecName;
                     }
 
                     if (!empty($row[static::PARAMNAME])) {
                         foreach ($row[static::PARAMNAME] as $key => $name) {
-                            if (isset($this->_specifications[trim($name)])) {
-                                $rowPosition = $this->_specifications[trim($name)] + count(self::MANDATORY);
+                            $name = $this->_mapFeatureName(trim($name));
+                            if (isset($this->_specifications[$name])) {
+                                $rowPosition = $this->_specifications[$name] + count(self::MANDATORY);
                                 $csvRow[$rowPosition] = $row[static::PARAM][$key];
                             }
                         }
@@ -369,6 +288,7 @@ class Feed
                             $csvRow[$rowPosition] = $row['PICTURE'][$i];
                         }
                     }
+                    $csvRow[count($csvRow)-1] = Config::RoyalToys()->SupplierName;
                     fputcsv($exportFile, $csvRow);
                 }
             }

@@ -13,7 +13,7 @@ class Common extends Accessor
 {
     const DATA = [
         'filePath' => Config::APP_DIR.'/files',
-        'companyName' => 'Active Kids'
+        'companyName' => 'Active Kids',
     ];
 
 }
