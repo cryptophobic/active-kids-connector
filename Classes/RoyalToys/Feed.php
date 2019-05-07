@@ -190,7 +190,7 @@ class Feed
      * @return string
      */
     private function _getFeatureType($featureName) {
-        return in_array($featureName, Config::RoyalToys()->featureFilters) ? 'selected' : 'input';
+        return in_array($featureName, Config::RoyalToys()->featureFilters) ? 'checkbox' : 'input';
     }
 
     /**
@@ -251,7 +251,10 @@ class Feed
 
                     $csvRow[static::BRAND] = empty($row['VENDOR']) ? Config::Common()->companyName : $row['VENDOR'][0];
                     $csvRow[static::CATEGORY] = $categoryName;
-                    $csvRow[static::PRODUCT_NAME] = $row['NAME'][0];
+
+                    $csvRow[static::PRODUCT_NAME] = $this->_cutName($row['NAME'][0], empty($row['VENDORCODE'][0]) ? $row['OFFERID'][0] : $row['VENDORCODE'][0]);
+
+
                     if ($row['PRICE'][0] > 200) {
                         $csvRow[static::PRICE] = round($row['PRICE'][0] * 1.30);
                     } else {
@@ -295,6 +298,32 @@ class Feed
             fclose($exportFile);
         }
         return file_exists($fileName) ? $fileName : false;
+    }
+
+    /**
+     * @param $name
+     * @param $id
+     * @return string
+     */
+    private function _cutName($name, $id)
+    {
+        if (mb_strlen($name) > 40) {
+            $arraySplit = preg_split("/[\s]+/", $name);
+            $count = count($arraySplit);
+            $result = $resultCandidate = '';
+            for ($i = 0;$i < $count; $i++) {
+                $resultCandidate = "$result $arraySplit[$i]";
+                if (mb_strlen($resultCandidate) > 40) {
+                    break;
+                }
+                $result = $resultCandidate;
+            }
+            if (mb_strlen($result) > 0) {
+                $name = trim($result) . ' '. $id;
+            }
+        }
+
+        return $name;
     }
 
     /**
