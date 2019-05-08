@@ -319,10 +319,15 @@ class Feed
                 $result = $resultCandidate;
             }
             if (mb_strlen($result) > 0) {
+                $arraySplit = preg_split("/[\s\-\(\)]+/", $id);
+                $result = str_replace($arraySplit, "", $result);
+                $result = preg_replace(["/\([\s\-]*\)/", "/\s+\-+/", "/\-+\s+/", "/\"/"], " ", $result);
                 $name = trim($result) . ' '. $id;
+
+                $name = preg_replace(["/\s+/", "/\-+/"], [" ", "-"], $name);
+
             }
         }
-
         return $name;
     }
 
