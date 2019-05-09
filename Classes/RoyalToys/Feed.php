@@ -307,8 +307,10 @@ class Feed
      */
     private function _cutName($name, $id)
     {
+        //$id = "D-88844";
+        //$name = "Коляска D-88844 для куклы,прогулочная,рег.ручка,стул для корм,в кор-ке,37-58-19см";
         if (mb_strlen($name) > 40) {
-            $arraySplit = preg_split("/[\s]+/", $name);
+            $arraySplit = preg_split("/[\s,]+/", $name);
             $count = count($arraySplit);
             $result = $resultCandidate = '';
             for ($i = 0;$i < $count; $i++) {
