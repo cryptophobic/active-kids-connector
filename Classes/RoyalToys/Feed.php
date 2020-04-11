@@ -71,6 +71,10 @@ class Feed
     private $_url;
 
     /**
+     * @var array
+     */
+    private $_categoriesList = [];
+    /**
      * @param $fileName
      * @return $this
      */
@@ -95,7 +99,7 @@ class Feed
      */
     private function _prepareCategories()
     {
-        $categoriesList = [];
+        $this->_categoriesList = [];
         if ($this->_prepareFeed()) {
             $parser = new Parser([
                 'fileName' => $this->_fileName,
@@ -103,15 +107,43 @@ class Feed
             ]);
             while($categoriesArray = $parser->getRows(500)) {
                 foreach ($categoriesArray['rows'] as $category) {
-                    if (!empty($category['CATEGORYPARENTID'])) {
-                        $categoriesList[$category['CATEGORYID'][0]] = ['name' => $category['CATEGORY'][0], 'parentId' => $category['CATEGORYPARENTID'][0]];
-                    } else {
-                        $categoriesList[$category['CATEGORYID'][0]] = ['name' => $category['CATEGORY'][0]];
+                    $mappedCategoryName =
+                        !empty(Config::RoyalToys()->categoriesMapping[$category['CATEGORY'][0]])
+                            ? Config::RoyalToys()->categoriesMapping[$category['CATEGORY'][0]]
+                            : '';
+
+                    $categoryData = [
+                        'name' => $category['CATEGORY'][0]
+                    ];
+
+                    if (!empty($mappedCategoryName)) {
+                        $categoryData['mappedName'] = $mappedCategoryName;
                     }
+
+                    if (!empty($category['CATEGORYPARENTID'])) {
+                        $categoryData['parentId'] = $category['CATEGORYPARENTID'][0];
+                    }
+
+                    $this->_categoriesList[$category['CATEGORYID'][0]] = $categoryData;
                 }
             }
         }
-        return $categoriesList;
+        return $this->_categoriesList;
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    public function categoriesList()
+    {
+        $this->_prepareCategories();
+        return array_map(
+            function ($item) {
+                return !empty($item['mappedName']) ? $item['mappedName'] : $item['name'];
+            },
+            $this->_categoriesList
+        );
     }
 
     /**
@@ -128,13 +160,13 @@ class Feed
             while($offersArray = $parser->getRows(5)) {
                 foreach ($offersArray['rows'] as $offer) {
                     if (!empty($offer['VENDOR'])) {
-                        $brands[$offer['VENDOR']] = $offer['VENDOR'];
+                        $brands[$offer['VENDOR'][0]] = $offer['VENDOR'][0];
                     }
                 }
             }
             $brands = array_values($brands);
             sort($brands);
-            print_r(implode("\n",array_values($brands)));
+            return array_values($brands);
         }
     }
 
@@ -202,16 +234,17 @@ class Feed
     }
 
     /**
-     * @param array $categoriesList
      * @param int $categoryId
      * @return string
      */
-    private function _getCategoryName($categoriesList, $categoryId) {
-        $categoryName = !empty($categoriesList[$categoryId]) ? $categoriesList[$categoryId]['name'] : '';
-        if (!empty(Config::RoyalToys()->categoriesMapping[$categoryName])) {
-            $categoryName = Config::RoyalToys()->categoriesMapping[$categoryName];
+    private function _getCategoryName($categoryId) {
+        if (empty($this->_categoriesList[$categoryId])) {
+            return '';
         }
-        return $categoryName;
+        return
+            !empty($this->_categoriesList[$categoryId]['mappedName'])
+                ? $this->_categoriesList[$categoryId]['mappedName']
+                : $this->_categoriesList[$categoryId]['name'];
     }
 
     /**
@@ -224,7 +257,7 @@ class Feed
         if ($this->_prepareFeed()) {
 
             $header = $this->_prepareHeader();
-            $categoriesList = $this->_prepareCategories();
+            $this->_prepareCategories();
 
             $parser = new Parser([
                 'fileName' => $this->_fileName,
@@ -244,7 +277,7 @@ class Feed
                         $csvRow[$rowPosition] = static::NOT_SPECIFIED;
                     }
 
-                    $categoryName = $this->_getCategoryName($categoriesList, $row['CATEGORYID'][0]);
+                    $categoryName = $this->_getCategoryName($row['CATEGORYID'][0]);
                     if (empty($categoryName)) {
                         continue;
                     }
@@ -253,7 +286,6 @@ class Feed
                     $csvRow[static::CATEGORY] = $categoryName;
 
                     $csvRow[static::PRODUCT_NAME] = $this->_cutName($row['NAME'][0], empty($row['VENDORCODE'][0]) ? $row['OFFERID'][0] : $row['VENDORCODE'][0]);
-
 
                     if ($row['PRICE'][0] > 200) {
                         $csvRow[static::PRICE] = round($row['PRICE'][0] * 1.30);
@@ -267,12 +299,13 @@ class Feed
                     $csvRow[static::STOCK] = 1;
                     $csvRow[static::IS_PUBLIC] = 1;
 
-                    $catSpecName = !empty($categoriesList[$row['CATEGORYID'][0]]) ? trim($categoriesList[$row['CATEGORYID'][0]]['name']) : '';
+                    //$catSpecName = !empty($this->_categoriesList[$row['CATEGORYID'][0]]) ? trim($this->_categoriesList[$row['CATEGORYID'][0]]['name']) : '';
                     $rowPosition = $this->_specifications[static::CATEGORY_SPECIFICATION] + count(self::MANDATORY);
+                    $csvRow[$rowPosition] = $categoryName;
 
-                    if(!empty(Config::RoyalToys()->categoriesMapping[$catSpecName])) {
-                        $csvRow[$rowPosition] = $catSpecName;
-                    }
+//                    if(!empty(Config::RoyalToys()->categoriesMapping[$catSpecName])) {
+//                        $csvRow[$rowPosition] = $catSpecName;
+//                    }
 
                     if (!empty($row[static::PARAMNAME])) {
                         foreach ($row[static::PARAMNAME] as $key => $name) {
