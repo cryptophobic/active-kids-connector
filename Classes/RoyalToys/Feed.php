@@ -20,6 +20,10 @@ class Feed
 
     const NOT_SPECIFIED = 'Не указано';
 
+    const NAME = 'name';
+
+    const PARENT_ID = 'parentId';
+
     const MANDATORY = ['Brand', 'Category', 'Product name', 'Price', 'Description long', 'Description short', 'Stock', 'Public', 'Original link'];
 
     const BRAND = 0;
@@ -74,6 +78,7 @@ class Feed
      * @var array
      */
     private $_categoriesList = [];
+
     /**
      * @param $fileName
      * @return $this
@@ -105,23 +110,13 @@ class Feed
                 'fileName' => $this->_fileName,
                 'pathXml' => static::XML_CATEGORIES_PATH,
             ]);
-            while($categoriesArray = $parser->getRows(500)) {
-                foreach ($categoriesArray['rows'] as $category) {
-                    $mappedCategoryName =
-                        !empty(Config::RoyalToys()->categoriesMapping[$category['CATEGORY'][0]])
-                            ? Config::RoyalToys()->categoriesMapping[$category['CATEGORY'][0]]
-                            : '';
+            while($categoriesChunk = $parser->getRows(500)) {
+                foreach ($categoriesChunk['rows'] as $category) {
 
-                    $categoryData = [
-                        'name' => $category['CATEGORY'][0]
-                    ];
-
-                    if (!empty($mappedCategoryName)) {
-                        $categoryData['mappedName'] = $mappedCategoryName;
-                    }
+                    $categoryData = [static::NAME => $category['CATEGORY'][0]];
 
                     if (!empty($category['CATEGORYPARENTID'])) {
-                        $categoryData['parentId'] = $category['CATEGORYPARENTID'][0];
+                        $categoryData[static::PARENT_ID] = $category['CATEGORYPARENTID'][0];
                     }
 
                     $this->_categoriesList[$category['CATEGORYID'][0]] = $categoryData;
@@ -137,13 +132,7 @@ class Feed
      */
     public function categoriesList()
     {
-        $this->_prepareCategories();
-        return array_map(
-            function ($item) {
-                return !empty($item['mappedName']) ? $item['mappedName'] : $item['name'];
-            },
-            $this->_categoriesList
-        );
+        return $this->_prepareCategories();
     }
 
     /**
@@ -235,16 +224,20 @@ class Feed
 
     /**
      * @param int $categoryId
-     * @return string
+     * @return array|null
      */
-    private function _getCategoryName($categoryId) {
+    private function _getCategoryTree($categoryId) {
         if (empty($this->_categoriesList[$categoryId])) {
-            return '';
+            return null;
         }
-        return
-            !empty($this->_categoriesList[$categoryId]['mappedName'])
-                ? $this->_categoriesList[$categoryId]['mappedName']
-                : $this->_categoriesList[$categoryId]['name'];
+
+        if (empty($this->_categoriesList[$categoryId][static::PARENT_ID])) {
+            return [$this->_categoriesList[$categoryId][static::NAME]];
+        }
+
+        $tree = $this->_getCategoryTree($this->_categoriesList[$categoryId][static::PARENT_ID]);
+
+        return !empty($tree) ? array_merge([$this->_categoriesList[$categoryId][static::NAME]], $tree) : null;
     }
 
     /**
@@ -277,10 +270,13 @@ class Feed
                         $csvRow[$rowPosition] = static::NOT_SPECIFIED;
                     }
 
-                    $categoryName = $this->_getCategoryName($row['CATEGORYID'][0]);
-                    if (empty($categoryName)) {
+                    $categoryTree = $this->_getCategoryTree($row['CATEGORYID'][0]);
+                    if (empty($categoryTree)) {
                         continue;
                     }
+
+                    $categoryName = array_pop($categoryTree);
+                    $categorySpec = implode(', ', $categoryTree);
 
                     $csvRow[static::BRAND] = empty($row['VENDOR']) ? Config::Common()->companyName : $row['VENDOR'][0];
                     $csvRow[static::CATEGORY] = $categoryName;
@@ -299,13 +295,8 @@ class Feed
                     $csvRow[static::STOCK] = 1;
                     $csvRow[static::IS_PUBLIC] = 1;
 
-                    //$catSpecName = !empty($this->_categoriesList[$row['CATEGORYID'][0]]) ? trim($this->_categoriesList[$row['CATEGORYID'][0]]['name']) : '';
                     $rowPosition = $this->_specifications[static::CATEGORY_SPECIFICATION] + count(self::MANDATORY);
-                    $csvRow[$rowPosition] = $categoryName;
-
-//                    if(!empty(Config::RoyalToys()->categoriesMapping[$catSpecName])) {
-//                        $csvRow[$rowPosition] = $catSpecName;
-//                    }
+                    $csvRow[$rowPosition] = $categorySpec;
 
                     if (!empty($row[static::PARAMNAME])) {
                         foreach ($row[static::PARAMNAME] as $key => $name) {
